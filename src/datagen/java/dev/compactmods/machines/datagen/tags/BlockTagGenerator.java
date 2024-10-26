@@ -1,15 +1,15 @@
 package dev.compactmods.machines.datagen.tags;
 
 import dev.compactmods.machines.api.core.Constants;
+import dev.compactmods.machines.api.machine.MachineConstants;
 import dev.compactmods.machines.machine.Machines;
-import dev.compactmods.machines.wall.Walls;
+import dev.compactmods.machines.room.Rooms;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
 import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class BlockTagGenerator extends BlockTagsProvider {
@@ -20,23 +20,22 @@ public class BlockTagGenerator extends BlockTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        var machines = Set.of(Machines.MACHINE_BLOCK_TINY.get(),
-                Machines.MACHINE_BLOCK_SMALL.get(),
-                Machines.MACHINE_BLOCK_NORMAL.get(),
-                Machines.MACHINE_BLOCK_LARGE.get(),
-                Machines.MACHINE_BLOCK_GIANT.get(),
-                Machines.MACHINE_BLOCK_MAXIMUM.get());
+        var breakableWall = Rooms.Blocks.BREAKABLE_WALL.get();
+        var boundMachine = Machines.Blocks.BOUND_MACHINE.get();
+        var unboundMachine = Machines.Blocks.UNBOUND_MACHINE.get();
 
-        var pickaxe = tag(BlockTags.MINEABLE_WITH_PICKAXE);
-        var ironTool = tag(BlockTags.NEEDS_IRON_TOOL);
+        tag(MachineConstants.MACHINE_BLOCK)
+                .add(boundMachine, unboundMachine);
 
-        var breakableWall = Walls.BLOCK_BREAKABLE_WALL.get();
-        pickaxe.add(breakableWall);
-        ironTool.add(breakableWall);
+        tag(MachineConstants.UNBOUND_MACHINE_BLOCK)
+                .add(unboundMachine);
 
-        machines.forEach(mach -> {
-            pickaxe.add(mach);
-            ironTool.add(mach);
-        });
+        tag(BlockTags.MINEABLE_WITH_PICKAXE)
+                .add(breakableWall)
+                .add(boundMachine, unboundMachine);
+
+        tag(BlockTags.NEEDS_IRON_TOOL)
+                .add(breakableWall)
+                .add(boundMachine, unboundMachine);
     }
 }

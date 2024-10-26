@@ -1,10 +1,11 @@
 package dev.compactmods.machines.machine;
 
 import dev.compactmods.machines.CompactMachines;
+import dev.compactmods.machines.LoggingUtil;
 import dev.compactmods.machines.api.dimension.CompactDimension;
 import dev.compactmods.machines.api.machine.MachineNbt;
 import dev.compactmods.machines.location.LevelBlockPosition;
-import dev.compactmods.machines.dimension.MissingDimensionException;
+import dev.compactmods.machines.api.dimension.MissingDimensionException;
 import dev.compactmods.machines.machine.graph.DimensionMachineGraph;
 import dev.compactmods.machines.machine.graph.CompactMachineNode;
 import dev.compactmods.machines.machine.graph.legacy.LegacyMachineConnections;
@@ -46,7 +47,7 @@ public class CompactMachineBlockEntity extends BlockEntity {
     private WeakReference<CompactMachineRoomNode> roomNode;
 
     public CompactMachineBlockEntity(BlockPos pos, BlockState state) {
-        super(Machines.MACHINE_TILE_ENTITY.get(), pos, state);
+        super(Machines.BlockEntities.MACHINE.get(), pos, state);
     }
 
     @Nonnull
@@ -265,10 +266,14 @@ public class CompactMachineBlockEntity extends BlockEntity {
         if(level == null || roomChunk == null) return;
 
         if (level instanceof ServerLevel sl) {
-            final var compactDim = CompactDimension.forServer(sl.getServer());
-            if (compactDim == null) return;
-            final var tunnelGraph = TunnelConnectionGraph.forRoom(compactDim, roomChunk);
-            TunnelHelper.setChunkMode(compactDim, roomChunk, tunnelGraph.tunnels().findAny().isPresent());
+            try{
+                final var compactDim = CompactDimension.forServer(sl.getServer());
+                if (compactDim == null) return;
+                final var tunnelGraph = TunnelConnectionGraph.forRoom(compactDim, roomChunk);
+                TunnelHelper.setChunkMode(compactDim, roomChunk, tunnelGraph.tunnels().findAny().isPresent());
+            } catch (MissingDimensionException e){
+                LoggingUtil.modLog().error(e);
+            }
         }
     }
 
@@ -277,12 +282,16 @@ public class CompactMachineBlockEntity extends BlockEntity {
         if(level == null || roomChunk == null) return Stream.empty();
 
         if(level instanceof ServerLevel sl) {
-            final var compactDim = CompactDimension.forServer(sl.getServer());
-            if(compactDim == null)
-                return Stream.empty();
+            try {
+                final var compactDim = CompactDimension.forServer(sl.getServer());
+                if(compactDim == null)
+                    return Stream.empty();
 
-            final var tunnelGraph = TunnelConnectionGraph.forRoom(compactDim, roomChunk);
-            return tunnelGraph.getTunnelsForSide(getLevelPosition(), dir).map(TunnelNode::position);
+                final var tunnelGraph = TunnelConnectionGraph.forRoom(compactDim, roomChunk);
+                return tunnelGraph.getTunnelsForSide(getLevelPosition(), dir).map(TunnelNode::position);
+            } catch (MissingDimensionException e) {
+                LoggingUtil.modLog().error(e);
+            }
         }
 
         return Stream.empty();

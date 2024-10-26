@@ -42,9 +42,9 @@ public abstract class BaseLangGenerator extends LanguageProvider {
     @Override
     protected void addTranslations() {
         // Machine Block names
-        for(var size : RoomSize.values()) {
+        /*for(var size : RoomSize.values()) {
             add(CompactMachineBlock.getBySize(size), String.format("%s (%s)", getMachineTranslation(), getSizeTranslation(size)));
-        }
+        }*/
 
         // Direction Names
         for (var dir : Direction.values()) {

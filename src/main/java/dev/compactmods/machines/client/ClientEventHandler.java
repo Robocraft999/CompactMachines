@@ -1,7 +1,9 @@
 package dev.compactmods.machines.client;
 
 import dev.compactmods.machines.api.core.Constants;
+import dev.compactmods.machines.client.machine.MachineColors;
 import dev.compactmods.machines.core.UIRegistration;
+import dev.compactmods.machines.machine.Machines;
 import dev.compactmods.machines.room.client.MachineRoomScreen;
 import dev.compactmods.machines.tunnel.Tunnels;
 import dev.compactmods.machines.tunnel.client.TunnelColors;
@@ -19,11 +21,13 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onItemColors(final RegisterColorHandlersEvent.Item colors) {
         colors.register(new TunnelItemColor(), Tunnels.ITEM_TUNNEL.get());
+        colors.register(MachineColors.ITEM, Machines.Items.UNBOUND_MACHINE.get(), Machines.Items.BOUND_MACHINE.get());
     }
 
     @SubscribeEvent
     public static void onBlockColors(final RegisterColorHandlersEvent.Block colors) {
         colors.register(new TunnelColors(), Tunnels.BLOCK_TUNNEL_WALL.get());
+        colors.register(MachineColors.BLOCK, Machines.Blocks.UNBOUND_MACHINE.get(), Machines.Blocks.BOUND_MACHINE.get());
     }
 
     @SubscribeEvent

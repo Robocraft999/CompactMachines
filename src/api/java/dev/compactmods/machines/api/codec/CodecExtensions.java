@@ -7,6 +7,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -32,5 +33,10 @@ public abstract class CodecExtensions {
     public static final Codec<ChunkPos> CHUNKPOS = Codec.INT_STREAM
             .comapFlatMap(i -> Util.fixedSize(i, 2)
                     .map(arr -> new ChunkPos(arr[0], arr[1])), pos -> IntStream.of(pos.x, pos.z));
+
+    public static final Codec<Vec2> VEC2 = Codec.FLOAT.listOf()
+            .comapFlatMap((vec) -> Util.fixedSize(vec, 2).map(
+                            (res) -> new Vec2(res.get(0), res.get(1))),
+                    (vec) -> List.of(vec.x, vec.y));
 
 }

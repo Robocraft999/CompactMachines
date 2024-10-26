@@ -5,9 +5,9 @@ import dev.compactmods.machines.api.core.CMTags;
 import dev.compactmods.machines.api.core.Constants;
 import dev.compactmods.machines.api.core.Messages;
 import dev.compactmods.machines.api.dimension.CompactDimension;
+import dev.compactmods.machines.api.dimension.MissingDimensionException;
 import dev.compactmods.machines.api.room.RoomSize;
 import dev.compactmods.machines.config.ServerConfig;
-import dev.compactmods.machines.dimension.MissingDimensionException;
 import dev.compactmods.machines.i18n.TranslationUtil;
 import dev.compactmods.machines.location.LevelBlockPosition;
 import dev.compactmods.machines.location.PreciseDimensionalPosition;
@@ -18,7 +18,6 @@ import dev.compactmods.machines.room.exceptions.NonexistentRoomException;
 import dev.compactmods.machines.room.history.PlayerRoomHistoryItem;
 import dev.compactmods.machines.room.menu.MachineRoomMenu;
 import dev.compactmods.machines.shrinking.Shrinking;
-import dev.compactmods.machines.tunnel.Tunnels;
 import dev.compactmods.machines.tunnel.graph.TunnelConnectionGraph;
 import dev.compactmods.machines.upgrade.MachineRoomUpgrades;
 import dev.compactmods.machines.upgrade.RoomUpgradeItem;
@@ -27,7 +26,6 @@ import dev.compactmods.machines.util.PlayerUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -137,12 +135,12 @@ public class CompactMachineBlock extends Block implements EntityBlock {
 
     public static Block getBySize(RoomSize size) {
         return switch (size) {
-            case TINY -> Machines.MACHINE_BLOCK_TINY.get();
-            case SMALL -> Machines.MACHINE_BLOCK_SMALL.get();
-            case NORMAL -> Machines.MACHINE_BLOCK_NORMAL.get();
-            case LARGE -> Machines.MACHINE_BLOCK_LARGE.get();
-            case GIANT -> Machines.MACHINE_BLOCK_GIANT.get();
-            case MAXIMUM -> Machines.MACHINE_BLOCK_MAXIMUM.get();
+            case TINY -> Machines.Blocks.UNBOUND_MACHINE.get();
+            case SMALL -> Machines.Blocks.UNBOUND_MACHINE.get();
+            case NORMAL -> Machines.Blocks.UNBOUND_MACHINE.get();
+            case LARGE -> Machines.Blocks.UNBOUND_MACHINE.get();
+            case GIANT -> Machines.Blocks.UNBOUND_MACHINE.get();
+            case MAXIMUM -> Machines.Blocks.UNBOUND_MACHINE.get();
         };
 
     }

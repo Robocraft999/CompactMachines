@@ -3,7 +3,7 @@ package dev.compactmods.machines.machine.graph.legacy;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.compactmods.machines.CompactMachines;
-import dev.compactmods.machines.dimension.MissingDimensionException;
+import dev.compactmods.machines.api.dimension.MissingDimensionException;
 import dev.compactmods.machines.dimension.Dimension;
 import dev.compactmods.machines.location.LevelBlockPosition;
 import net.minecraft.nbt.CompoundTag;

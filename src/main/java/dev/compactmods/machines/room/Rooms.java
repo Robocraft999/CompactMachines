@@ -3,27 +3,90 @@ package dev.compactmods.machines.room;
 import com.mojang.authlib.GameProfile;
 import dev.compactmods.machines.CompactMachines;
 import dev.compactmods.machines.api.dimension.CompactDimension;
+import dev.compactmods.machines.api.dimension.MissingDimensionException;
 import dev.compactmods.machines.api.location.IDimensionalPosition;
 import dev.compactmods.machines.api.room.RoomSize;
 import dev.compactmods.machines.config.ServerConfig;
-import dev.compactmods.machines.dimension.MissingDimensionException;
+import dev.compactmods.machines.core.Registries;
+import dev.compactmods.machines.player.capability.IPlayerRoomData;
 import dev.compactmods.machines.room.data.CompactRoomData;
 import dev.compactmods.machines.room.exceptions.NonexistentRoomException;
 import dev.compactmods.machines.util.CompactStructureGenerator;
 import dev.compactmods.machines.util.MathUtil;
+import dev.compactmods.machines.wall.BreakableWallBlock;
+import dev.compactmods.machines.wall.ItemBlockWall;
+import dev.compactmods.machines.wall.SolidWallBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraftforge.registries.RegistryObject;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
-public class Rooms {
+public interface Rooms {
+
+    interface Blocks {
+        RegistryObject<SolidWallBlock> SOLID_WALL = Registries.BLOCKS.register("solid_wall", () ->
+                new SolidWallBlock(BlockBehaviour.Properties.of()
+                        .strength(-1.0F, 3600000.8F)
+                        .sound(SoundType.METAL)
+                        .lightLevel((state) -> 15)));
+
+
+        RegistryObject<BreakableWallBlock> BREAKABLE_WALL = Registries.BLOCKS.register("wall", () ->
+                new BreakableWallBlock(BlockBehaviour.Properties.of()
+                        .strength(3.0f, 128.0f)
+                        .requiresCorrectToolForDrops()));
+
+        static void prepare() {
+        }
+    }
+
+    interface Items {
+        Supplier<Item.Properties> WALL_ITEM_PROPS = Item.Properties::new;
+
+        RegistryObject<ItemBlockWall> ITEM_SOLID_WALL = Registries.ITEMS.register("solid_wall", () ->
+                new ItemBlockWall(Blocks.SOLID_WALL.get(), WALL_ITEM_PROPS.get()));
+
+        RegistryObject<ItemBlockWall> BREAKABLE_WALL = Registries.ITEMS.register("wall", () ->
+                new ItemBlockWall(Blocks.BREAKABLE_WALL.get(), WALL_ITEM_PROPS.get()));
+
+        static void prepare() {
+        }
+    }
+
+    interface Menus {
+        static void prepare() {
+        }
+    }
+
+    interface DataAttachments {
+        Capability<IPlayerRoomData> PLAYER_ROOM_DATA = CapabilityManager.get(new CapabilityToken<>(){});
+
+        static void prepare() {
+        }
+    }
+
+    static void prepare() {
+        Blocks.prepare();
+        Items.prepare();
+        Menus.prepare();
+        DataAttachments.prepare();
+    }
+
     public static ChunkPos createNew(MinecraftServer serv, RoomSize size, UUID owner) throws MissingDimensionException {
         final var compactWorld = CompactDimension.forServer(serv);
         if (compactWorld == null)

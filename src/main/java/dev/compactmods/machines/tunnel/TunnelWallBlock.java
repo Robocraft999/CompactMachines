@@ -5,9 +5,9 @@ import dev.compactmods.machines.api.dimension.CompactDimension;
 import dev.compactmods.machines.api.tunnels.TunnelPosition;
 import dev.compactmods.machines.api.tunnels.lifecycle.TunnelTeardownHandler;
 import dev.compactmods.machines.i18n.TranslationUtil;
+import dev.compactmods.machines.room.Rooms;
 import dev.compactmods.machines.tunnel.graph.TunnelConnectionGraph;
 import dev.compactmods.machines.wall.ProtectedWallBlock;
-import dev.compactmods.machines.wall.Walls;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -96,7 +96,7 @@ public class TunnelWallBlock extends ProtectedWallBlock implements EntityBlock {
             final Direction tunnelWallSide = hitResult.getDirection();
 
             if (player.isShiftKeyDown()) {
-                BlockState solidWall = Walls.BLOCK_SOLID_WALL.get().defaultBlockState();
+                BlockState solidWall = Rooms.Blocks.SOLID_WALL.get().defaultBlockState();
 
                 level.setBlockAndUpdate(pos, solidWall);
 

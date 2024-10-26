@@ -45,12 +45,12 @@ public class CompactMachineItem extends BlockItem {
 
     public static Item getItemBySize(RoomSize size) {
         return switch (size) {
-            case TINY -> Machines.MACHINE_BLOCK_ITEM_TINY.get();
-            case SMALL -> Machines.MACHINE_BLOCK_ITEM_SMALL.get();
-            case NORMAL -> Machines.MACHINE_BLOCK_ITEM_NORMAL.get();
-            case LARGE -> Machines.MACHINE_BLOCK_ITEM_LARGE.get();
-            case GIANT -> Machines.MACHINE_BLOCK_ITEM_GIANT.get();
-            case MAXIMUM -> Machines.MACHINE_BLOCK_ITEM_MAXIMUM.get();
+            case TINY -> Machines.Items.UNBOUND_MACHINE.get();
+            case SMALL -> Machines.Items.UNBOUND_MACHINE.get();
+            case NORMAL -> Machines.Items.UNBOUND_MACHINE.get();
+            case LARGE -> Machines.Items.UNBOUND_MACHINE.get();
+            case GIANT -> Machines.Items.UNBOUND_MACHINE.get();
+            case MAXIMUM -> Machines.Items.UNBOUND_MACHINE.get();
         };
     }
 

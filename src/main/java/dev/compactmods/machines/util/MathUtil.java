@@ -3,8 +3,21 @@ package dev.compactmods.machines.util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.world.phys.AABB;
+
+import java.util.stream.Stream;
 
 public class MathUtil {
+    public static Stream<ChunkPos> getChunksFromAABB(AABB bounds) {
+        ChunkPos min = new ChunkPos(BlockPos.containing(bounds.minX, bounds.minY, bounds.minZ));
+        ChunkPos max = new ChunkPos(BlockPos.containing(bounds.maxX, bounds.maxY, bounds.maxZ));
+
+        return ChunkPos.rangeClosed(min, max);
+    }
+
+    public static int volumeOf(Vec3i dimensions) {
+        return dimensions.getX() * dimensions.getY() * dimensions.getZ();
+    }
     /**
      *
      * @param i

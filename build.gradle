@@ -43,6 +43,7 @@ tasks.create("forgeVersion") {
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+jarJar.enable()
 sourceSets {
     api {
         resources.srcDirs = []
@@ -63,6 +64,12 @@ sourceSets {
         runtimeClasspath += sourceSets.api.output
     }
 
+    rooms {
+        compileClasspath += configurations.getByName("minecraft")
+        compileClasspath += sourceSets.api.output
+        runtimeClasspath += sourceSets.api.output
+    }
+
     main {
         java {
             srcDir "src/main/java"
@@ -77,6 +84,8 @@ sourceSets {
         runtimeClasspath += sourceSets.api.output
         compileClasspath += sourceSets.tunnels.output
         runtimeClasspath += sourceSets.tunnels.output
+        compileClasspath += sourceSets.rooms.output
+        runtimeClasspath += sourceSets.rooms.output
     }
 
     test {
@@ -123,6 +132,7 @@ minecraft {
             mods {
                 compactmachines {
                     source sourceSets.tunnels
+                    source sourceSets.rooms
                     source sourceSets.main
                     source sourceSets.api
                 }
@@ -152,6 +162,7 @@ minecraft {
             mods {
                 compactmachines {
                     source sourceSets.tunnels
+                    source sourceSets.rooms
                     source sourceSets.main
                     source sourceSets.api
                     source sourceSets.test
@@ -189,6 +200,7 @@ minecraft {
             mods {
                 compactmachines {
                     source sourceSets.tunnels
+                    source sourceSets.rooms
                     source sourceSets.main
                     source sourceSets.api
                     source sourceSets.datagen
@@ -225,6 +237,7 @@ minecraft {
             mods {
                 compactmachines {
                     source sourceSets.tunnels
+                    source sourceSets.rooms
                     source sourceSets.api
                     source sourceSets.main
                     source sourceSets.test
@@ -260,6 +273,22 @@ repositories {
         name "tterrag maven"
         url "https://maven.tterrag.com/"
     }
+
+    maven {
+        url = uri("https://maven.pkg.github.com/compactmods/feather")
+        name = "Github PKG Core"
+        credentials {
+            username = project.findProperty("gpr.user") as String ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.token") as String ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
+
+    mavenCentral {
+        name = "Central"
+        content {
+            includeGroup("com.aventrix.jnanoid")
+        }
+    }
 }
 
 dependencies {
@@ -275,6 +304,14 @@ dependencies {
 
     // The One Probe
     implementation(fg.deobf("curse.maven:theoneprobe-245211:4629624"))
+
+    //minecraftLibrary
+    //implementation "dev.compactmods:feather:0.1.8"
+    minecraftLibrary("dev.compactmods:feather:0.1.8") {transitive = false}
+    jarJar( "dev.compactmods:feather:0.1.8") {transitive = false}
+    //implementation "com.aventrix.jnanoid:jnanoid:2.0.0"
+    minecraftLibrary "com.aventrix.jnanoid:jnanoid:2.0.0"
+    jarJar("com.aventrix.jnanoid:jnanoid:2.0.0")
 
     if (!System.getenv().containsKey("CI") && include_test_mods.equals("true")) {
         // Nicephore - Screenshots and Stuff
@@ -334,6 +371,7 @@ compileDatagenJava {
 
 jar {
     from sourceSets.tunnels.output
+    from sourceSets.rooms.output
     from sourceSets.main.output
     from sourceSets.api.output
     destinationDirectory = file("$rootDir/build-out")
@@ -351,6 +389,7 @@ jar {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
+    archiveClassifier = 'slim'
 }
 
 task apiJar(type: Jar) {
@@ -358,6 +397,10 @@ task apiJar(type: Jar) {
     // Sources included because of MinecraftForge/ForgeGradle#369
     archiveClassifier = 'api'
     destinationDirectory = file("$rootDir/build-out")
+}
+
+tasks.jarJar{
+    archiveClassifier = ''
 }
 
 artifacts {

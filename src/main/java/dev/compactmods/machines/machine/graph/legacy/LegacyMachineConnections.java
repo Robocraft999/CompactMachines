@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.compactmods.machines.CompactMachines;
 import dev.compactmods.machines.api.codec.CodecExtensions;
-import dev.compactmods.machines.dimension.MissingDimensionException;
+import dev.compactmods.machines.api.dimension.MissingDimensionException;
 import dev.compactmods.machines.dimension.Dimension;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;

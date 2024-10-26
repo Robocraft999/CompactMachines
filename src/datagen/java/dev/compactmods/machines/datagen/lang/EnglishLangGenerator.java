@@ -7,10 +7,10 @@ import dev.compactmods.machines.api.core.Tooltips;
 import dev.compactmods.machines.api.room.RoomSize;
 import dev.compactmods.machines.api.room.upgrade.RoomUpgrade;
 import dev.compactmods.machines.client.CreativeTabs;
+import dev.compactmods.machines.room.Rooms;
 import dev.compactmods.machines.shrinking.Shrinking;
 import dev.compactmods.machines.tunnel.Tunnels;
 import dev.compactmods.machines.upgrade.MachineRoomUpgrades;
-import dev.compactmods.machines.wall.Walls;
 import net.minecraft.data.DataGenerator;
 
 import static org.apache.commons.lang3.StringUtils.capitalize;
@@ -55,8 +55,8 @@ public class EnglishLangGenerator extends BaseLangGenerator {
 
         addAdvancementTranslations();
 
-        addBlock(Walls.BLOCK_BREAKABLE_WALL, "Compact Machine Wall");
-        addBlock(Walls.BLOCK_SOLID_WALL, "Solid Compact Machine Wall");
+        addBlock(Rooms.Blocks.BREAKABLE_WALL, "Compact Machine Wall");
+        addBlock(Rooms.Blocks.SOLID_WALL, "Solid Compact Machine Wall");
         addBlock(Tunnels.BLOCK_TUNNEL_WALL, "Solid Compact Machine Wall (with Tunnel)");
 
         add(Shrinking.PERSONAL_SHRINKING_DEVICE.get(), "Personal Shrinking Device");

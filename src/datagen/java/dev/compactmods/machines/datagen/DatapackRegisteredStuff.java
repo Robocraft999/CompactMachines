@@ -1,8 +1,10 @@
 package dev.compactmods.machines.datagen;
 
+import dev.compactmods.machines.api.CompactMachinesApi;
 import dev.compactmods.machines.api.core.Constants;
 import dev.compactmods.machines.api.dimension.CompactDimension;
 import dev.compactmods.machines.dimension.Dimension;
+import dev.compactmods.machines.api.room.RoomTemplate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
@@ -36,8 +38,8 @@ public class DatapackRegisteredStuff extends DatapackBuiltinEntriesProvider {
     private static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
             .add(Registries.BIOME, DatapackRegisteredStuff::generateBiomes)
             .add(Registries.DIMENSION_TYPE, DatapackRegisteredStuff::generateDimensionTypes)
-            .add(Registries.LEVEL_STEM, DatapackRegisteredStuff::generateDimensions);
-            //.add(RoomTemplate.REGISTRY_KEY, DatapackRegisteredStuff::addRoomTemplates);
+            .add(Registries.LEVEL_STEM, DatapackRegisteredStuff::generateDimensions)
+            .add(RoomTemplate.REGISTRY_KEY, DatapackRegisteredStuff::addRoomTemplates);
 
     DatapackRegisteredStuff(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> registries) {
         super(packOutput, registries, BUILDER, Set.of(Constants.MOD_ID));
@@ -94,7 +96,7 @@ public class DatapackRegisteredStuff extends DatapackBuiltinEntriesProvider {
         ctx.register(ResourceKey.create(Registries.LEVEL_STEM, CompactDimension.LEVEL_KEY.location()), stem);
     }
 
-    /*private static void addRoomTemplates(BootstapContext<RoomTemplate> ctx) {
+    private static void addRoomTemplates(BootstapContext<RoomTemplate> ctx) {
         roomTemplate(ctx, "tiny", new RoomTemplate(3, FastColor.ARGB32.color(255, 201, 91, 19)));
         roomTemplate(ctx, "small", new RoomTemplate(5, FastColor.ARGB32.color(255, 212, 210, 210)));
         roomTemplate(ctx, "normal", new RoomTemplate(7, FastColor.ARGB32.color(255, 251, 242, 54)));
@@ -104,6 +106,6 @@ public class DatapackRegisteredStuff extends DatapackBuiltinEntriesProvider {
     }
 
     private static void roomTemplate(BootstapContext<RoomTemplate> ctx, String name, RoomTemplate template) {
-        ctx.register(ResourceKey.create(RoomTemplate.REGISTRY_KEY, new ResourceLocation(Constants.MOD_ID, name)), template);
-    }*/
+        ctx.register(ResourceKey.create(RoomTemplate.REGISTRY_KEY, CompactMachinesApi.modRL(name)), template);
+    }
 }

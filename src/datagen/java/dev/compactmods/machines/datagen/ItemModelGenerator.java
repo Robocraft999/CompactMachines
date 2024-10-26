@@ -2,6 +2,7 @@ package dev.compactmods.machines.datagen;
 
 import dev.compactmods.machines.api.core.Constants;
 import dev.compactmods.machines.api.room.RoomSize;
+import dev.compactmods.machines.machine.Machines;
 import dev.compactmods.machines.upgrade.MachineRoomUpgrades;
 import net.minecraft.data.PackOutput;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
@@ -15,8 +16,10 @@ public class ItemModelGenerator extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        for (var size : RoomSize.values())
-            machine(size.getSerializedName());
+        /*for (var size : RoomSize.values())
+            machine(size.getSerializedName());*/
+        withExistingParent(Machines.Items.BOUND_MACHINE.getId().getPath(), modLoc("block/machine/machine"));
+        withExistingParent(Machines.Items.UNBOUND_MACHINE.getId().getPath(), modLoc("block/machine/machine"));
 
         withExistingParent("solid_wall", modLoc("block/wall"));
         withExistingParent("wall", modLoc("block/wall"));

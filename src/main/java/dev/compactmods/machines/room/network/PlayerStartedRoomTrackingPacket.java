@@ -1,6 +1,6 @@
 package dev.compactmods.machines.room.network;
 
-import dev.compactmods.machines.dimension.MissingDimensionException;
+import dev.compactmods.machines.api.dimension.MissingDimensionException;
 import dev.compactmods.machines.room.Rooms;
 import dev.compactmods.machines.room.exceptions.NonexistentRoomException;
 import net.minecraft.network.FriendlyByteBuf;

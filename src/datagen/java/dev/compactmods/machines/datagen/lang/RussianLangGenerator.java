@@ -4,9 +4,9 @@ import dev.compactmods.machines.api.core.Constants;
 import dev.compactmods.machines.api.core.Messages;
 import dev.compactmods.machines.api.core.Tooltips;
 import dev.compactmods.machines.api.room.RoomSize;
+import dev.compactmods.machines.room.Rooms;
 import dev.compactmods.machines.shrinking.Shrinking;
 import dev.compactmods.machines.tunnel.Tunnels;
-import dev.compactmods.machines.wall.Walls;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 
@@ -49,8 +49,8 @@ public class RussianLangGenerator extends BaseLangGenerator {
         super.addTranslations();
 
         // Walls (Solid, Breakable, Tunnel)
-        add(Walls.BLOCK_SOLID_WALL.get(), "Прочная стена компактного механизма");
-        add(Walls.BLOCK_BREAKABLE_WALL.get(), "Стена компактного механизма");
+        add(Rooms.Blocks.SOLID_WALL.get(), "Прочная стена компактного механизма");
+        add(Rooms.Blocks.BREAKABLE_WALL.get(), "Стена компактного механизма");
         add(Tunnels.BLOCK_TUNNEL_WALL.get(), "Прочная стена компактного механизма (с Туннелем)");
 
         // Basics

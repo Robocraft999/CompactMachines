@@ -1,6 +1,7 @@
 package dev.compactmods.machines.tunnel;
 
 import dev.compactmods.machines.CompactMachines;
+import dev.compactmods.machines.api.dimension.MissingDimensionException;
 import dev.compactmods.machines.api.location.IDimensionalBlockPosition;
 import dev.compactmods.machines.api.tunnels.TunnelDefinition;
 import dev.compactmods.machines.api.tunnels.TunnelPosition;
@@ -8,11 +9,10 @@ import dev.compactmods.machines.api.tunnels.capability.CapabilityTunnel;
 import dev.compactmods.machines.api.tunnels.lifecycle.InstancedTunnel;
 import dev.compactmods.machines.api.tunnels.lifecycle.TunnelInstance;
 import dev.compactmods.machines.api.tunnels.lifecycle.TunnelTeardownHandler;
-import dev.compactmods.machines.dimension.MissingDimensionException;
 import dev.compactmods.machines.location.LevelBlockPosition;
 import dev.compactmods.machines.machine.graph.legacy.LegacyMachineLocationsGraph;
+import dev.compactmods.machines.room.Rooms;
 import dev.compactmods.machines.tunnel.graph.TunnelConnectionGraph;
-import dev.compactmods.machines.wall.Walls;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -90,7 +90,7 @@ public class TunnelWallEntity extends BlockEntity {
             // Null tunnel types here mean it's being loaded into the world
             if (this.tunnelType != null && tunnelType.equals(Tunnels.UNKNOWN.get())) {
                 CompactMachines.LOGGER.warn("Removing unknown tunnel type at {}", worldPosition.toShortString());
-                sl.setBlock(worldPosition, Walls.BLOCK_SOLID_WALL.get().defaultBlockState(), Block.UPDATE_ALL);
+                sl.setBlock(worldPosition, Rooms.Blocks.SOLID_WALL.get().defaultBlockState(), Block.UPDATE_ALL);
             }
         }
     }

@@ -1,6 +1,8 @@
 package dev.compactmods.machines;
 
+import dev.compactmods.feather.node.Node;
 import dev.compactmods.machines.api.core.Constants;
+import dev.compactmods.machines.api.room.RoomTemplate;
 import dev.compactmods.machines.client.CreativeTabs;
 import dev.compactmods.machines.command.Commands;
 import dev.compactmods.machines.config.CommonConfig;
@@ -16,20 +18,16 @@ import dev.compactmods.machines.room.data.LootFunctions;
 import dev.compactmods.machines.shrinking.Shrinking;
 import dev.compactmods.machines.tunnel.Tunnels;
 import dev.compactmods.machines.upgrade.MachineRoomUpgrades;
-import dev.compactmods.machines.wall.Walls;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DataPackRegistryEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-
-import javax.annotation.Nonnull;
 
 @Mod(Constants.MOD_ID)
 public class CompactMachines {
@@ -60,6 +58,7 @@ public class CompactMachines {
      */
     private static void doRegistration() {
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
+        Node t = null;
 
         Registries.TABS.register(bus);
         Registries.BLOCKS.register(bus);
@@ -72,12 +71,16 @@ public class CompactMachines {
         Registries.EDGE_TYPES.register(bus);
         Registries.COMMAND_ARGUMENT_TYPES.register(bus);
         Registries.LOOT_FUNCS.register(bus);
+
+        bus.addListener((DataPackRegistryEvent.NewRegistry newRegistries) -> {
+            newRegistries.dataPackRegistry(RoomTemplate.REGISTRY_KEY, RoomTemplate.CODEC, RoomTemplate.CODEC);
+        });
     }
 
     private static void preparePackages() {
         // Package initialization here, this kickstarts the rest of the DR code (classloading)
         Machines.prepare();
-        Walls.prepare();
+        Rooms.prepare();
         Tunnels.prepare();
         Shrinking.prepare();
         CreativeTabs.prepare();
