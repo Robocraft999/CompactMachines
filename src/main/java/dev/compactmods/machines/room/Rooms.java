@@ -2,15 +2,18 @@ package dev.compactmods.machines.room;
 
 import com.mojang.authlib.GameProfile;
 import dev.compactmods.machines.CompactMachines;
+import dev.compactmods.machines.LoggingUtil;
 import dev.compactmods.machines.api.dimension.CompactDimension;
 import dev.compactmods.machines.api.dimension.MissingDimensionException;
 import dev.compactmods.machines.api.location.IDimensionalPosition;
+import dev.compactmods.machines.api.room.RoomApi;
 import dev.compactmods.machines.api.room.RoomSize;
 import dev.compactmods.machines.config.ServerConfig;
 import dev.compactmods.machines.core.Registries;
 import dev.compactmods.machines.player.capability.IPlayerRoomData;
 import dev.compactmods.machines.room.data.CompactRoomData;
 import dev.compactmods.machines.room.exceptions.NonexistentRoomException;
+import dev.compactmods.machines.room.ui.preview.MachineRoomMenu;
 import dev.compactmods.machines.util.CompactStructureGenerator;
 import dev.compactmods.machines.util.MathUtil;
 import dev.compactmods.machines.wall.BreakableWallBlock;
@@ -19,6 +22,7 @@ import dev.compactmods.machines.wall.SolidWallBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.SoundType;
@@ -29,6 +33,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.registries.RegistryObject;
 
 import javax.naming.OperationNotSupportedException;
@@ -69,6 +74,8 @@ public interface Rooms {
     }
 
     interface Menus {
+        RegistryObject<MenuType<MachineRoomMenu>> MACHINE_MENU = Registries.CONTAINERS.register("machine", () ->
+                IForgeMenuType.create(MachineRoomMenu::createClientMenu));
         static void prepare() {
         }
     }
@@ -148,6 +155,25 @@ public interface Rooms {
                 new Vec3i(inside, inside + 1, inside), false, null);
 
         return tem;
+    }
+
+    static StructureTemplate getInternalBlocks(MinecraftServer server, String roomCode) {
+        final var template = new StructureTemplate();
+
+        final var compactDim = server.getLevel(CompactDimension.LEVEL_KEY);
+        RoomApi.room(roomCode).ifPresentOrElse(inst -> {
+            var outer = inst.boundaries().outerBounds();
+            var inner = inst.boundaries().innerBounds();
+            template.fillFromWorld(compactDim, new BlockPos((int)inner.minX+1, (int)inner.minY - 1, (int)inner.minZ+1),
+                    new Vec3i((int)inner.getXsize(), (int)inner.getYsize() + 1, (int)inner.getZsize()), false, null);
+            LoggingUtil.modLog().info(template.getSize());
+        },
+        () -> {
+            //TODO throw error
+            LoggingUtil.modLog().error("Could not get Internal Blocks of room: " + roomCode);
+        }
+        );
+        return template;
     }
 
     public static void resetSpawn(MinecraftServer server, ChunkPos room) throws NonexistentRoomException {

@@ -8,7 +8,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class UIRegistration {
 
-    public static final RegistryObject<MenuType<MachineRoomMenu>> MACHINE_MENU = Registries.CONTAINERS.register("machine", () -> IForgeMenuType.create(
+    /*public static final RegistryObject<MenuType<MachineRoomMenu>> MACHINE_MENU = Registries.CONTAINERS.register("machine", () -> IForgeMenuType.create(
             ((windowId, inv, data) -> {
                 data.readBlockPos();
                 final var mach = data.readJsonWithCodec(LevelBlockPosition.CODEC);
@@ -18,7 +18,7 @@ public class UIRegistration {
 
                 return new MachineRoomMenu(windowId, room, mach, roomName);
             })
-    ));
+    ));*/
 
     public static void prepare() {
 

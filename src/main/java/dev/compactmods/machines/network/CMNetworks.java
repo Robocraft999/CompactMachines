@@ -25,6 +25,14 @@ public class CMNetworks {
             .simpleChannel();
     private static int index;
 
+    public static void register(){
+        registerServerToClient(SyncRoomMetadataPacket.class, SyncRoomMetadataPacket::decode);
+        registerServerToClient(InitialRoomBlockDataPacket.class, InitialRoomBlockDataPacket::decode);
+
+        registerClientToServer(PlayerRequestedTeleportPacket.class, PlayerRequestedTeleportPacket::decode);
+        registerClientToServer(PlayerStartedRoomTrackingPacket.class, PlayerStartedRoomTrackingPacket::decode);
+    }
+
     private static <MSG extends ICMPacket> void registerClientToServer(Class<MSG> type, Function<FriendlyByteBuf, MSG> decoder) {
         registerMessage(type, decoder, NetworkDirection.PLAY_TO_SERVER);
     }

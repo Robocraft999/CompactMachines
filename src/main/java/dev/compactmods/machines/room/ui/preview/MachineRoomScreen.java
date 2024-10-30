@@ -1,41 +1,41 @@
-package dev.compactmods.machines.room.client;
+package dev.compactmods.machines.room.ui.preview;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import com.mojang.math.Axis;
 import dev.compactmods.machines.api.core.Constants;
+import dev.compactmods.machines.api.shrinking.PSDTags;
 import dev.compactmods.machines.client.gui.widget.PSDIconButton;
 import dev.compactmods.machines.client.level.RenderingLevel;
 import dev.compactmods.machines.client.render.RenderTypes;
 import dev.compactmods.machines.client.render.SuperRenderTypeBuffer;
 import dev.compactmods.machines.client.util.TransformingVertexBuilder;
-import dev.compactmods.machines.location.LevelBlockPosition;
-import dev.compactmods.machines.room.menu.MachineRoomMenu;
-import dev.compactmods.machines.room.network.PlayerStartedRoomTrackingPacket;
-import dev.compactmods.machines.room.network.RoomNetworkHandler;
-import dev.compactmods.machines.shrinking.Shrinking;
+import dev.compactmods.machines.network.CMNetworks;
+import dev.compactmods.machines.network.PlayerStartedRoomTrackingPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraftforge.client.model.data.ModelData;
 import org.joml.Matrix4f;
 
 public class MachineRoomScreen extends AbstractContainerScreen<MachineRoomMenu> {
-
     private final Inventory inv;
     protected double rotateX = 45.0f;
     protected double rotateY = 20.0f;
+
     private PSDIconButton psdButton;
+    //private ImageButton psdButton;
+
     private RenderingLevel renderer;
 
     public MachineRoomScreen(MachineRoomMenu menu, Inventory inv, Component title) {
@@ -46,7 +46,8 @@ public class MachineRoomScreen extends AbstractContainerScreen<MachineRoomMenu> 
         this.inv = inv;
 
         // Send packet to server for block data
-        RoomNetworkHandler.CHANNEL.sendToServer(new PlayerStartedRoomTrackingPacket(menu.getRoom()));
+        // RoomNetworkHandler.CHANNEL.sendToServer(new PlayerStartedRoomTrackingPacket(menu.getRoom()));
+        CMNetworks.sendToServer(new PlayerStartedRoomTrackingPacket(menu.getRoom()));
         updateBlockRender();
     }
 
@@ -54,9 +55,9 @@ public class MachineRoomScreen extends AbstractContainerScreen<MachineRoomMenu> 
     protected void init() {
         super.init();
 
-        /*this.psdButton = addRenderableWidget(new PSDIconButton(this, leftPos + 220, topPos + 210));
+        this.psdButton = addRenderableWidget(new PSDIconButton(this, leftPos + 220, topPos + 210));
         if (hasPsdItem())
-            this.psdButton.setEnabled(true);*/
+            this.psdButton.setEnabled(true);
     }
 
     public void updateBlockRender() {
@@ -65,7 +66,7 @@ public class MachineRoomScreen extends AbstractContainerScreen<MachineRoomMenu> 
     }
 
     private boolean hasPsdItem() {
-        return inv.contains(new ItemStack(Shrinking.PERSONAL_SHRINKING_DEVICE.get()));
+        return inv.contains(PSDTags.ITEM);
     }
 
     @Override
@@ -97,8 +98,8 @@ public class MachineRoomScreen extends AbstractContainerScreen<MachineRoomMenu> 
         graphics.drawCenteredString(font, p, 0, this.titleLabelY, 0xFFFFFFFF);
 
         var room = menu.getRoom();
-        var rt =  Component.literal("(%s, %s)".formatted(room.x, room.z));
-        pose.scale(0.8f, 0.8f, 0.8f);
+        var rt =  Component.literal(room);
+        pose.scale(0.7f, 0.7f, 0.7f);
         graphics.drawCenteredString(font, rt, 0,this.titleLabelY + font.lineHeight + 2, 0xFFCCCCCC);
         pose.popPose();
     }
@@ -223,7 +224,7 @@ public class MachineRoomScreen extends AbstractContainerScreen<MachineRoomMenu> 
         // this.blit(pose, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight);
     }
 
-    public LevelBlockPosition getMachine() {
+    public GlobalPos getMachine() {
         return menu.getMachine();
     }
 }

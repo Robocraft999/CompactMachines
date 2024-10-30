@@ -4,7 +4,8 @@ import dev.compactmods.machines.api.core.Constants;
 import dev.compactmods.machines.client.machine.MachineColors;
 import dev.compactmods.machines.core.UIRegistration;
 import dev.compactmods.machines.machine.Machines;
-import dev.compactmods.machines.room.client.MachineRoomScreen;
+import dev.compactmods.machines.room.Rooms;
+import dev.compactmods.machines.room.ui.preview.MachineRoomScreen;
 import dev.compactmods.machines.tunnel.Tunnels;
 import dev.compactmods.machines.tunnel.client.TunnelColors;
 import dev.compactmods.machines.tunnel.client.TunnelItemColor;
@@ -32,6 +33,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onClientSetup(final FMLClientSetupEvent client) {
-        MenuScreens.register(UIRegistration.MACHINE_MENU.get(), MachineRoomScreen::new);
+        //MenuScreens.register(UIRegistration.MACHINE_MENU.get(), MachineRoomScreen::new);
+        MenuScreens.register(Rooms.Menus.MACHINE_MENU.get(), MachineRoomScreen::new);
     }
 }

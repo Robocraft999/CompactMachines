@@ -3,6 +3,8 @@ package dev.compactmods.machines.machine.block;
 import dev.compactmods.machines.api.machine.block.IBoundCompactMachineBlockEntity;
 import dev.compactmods.machines.api.room.RoomApi;
 import dev.compactmods.machines.machine.Machines;
+import dev.compactmods.machines.machine.capability.IMachineColorCapability;
+import dev.compactmods.machines.machine.capability.MachineColorCapabilityImpl;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
@@ -13,6 +15,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,9 +28,11 @@ public class BoundCompactMachineBlockEntity extends BlockEntity implements IBoun
     private String roomCode;
     @Nullable
     private Component customName;
+    private LazyOptional<IMachineColorCapability> capability;
 
     public BoundCompactMachineBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(Machines.BlockEntities.MACHINE.get(), pPos, pBlockState);
+        capability = LazyOptional.of(MachineColorCapabilityImpl::getDefault);
     }
 
     @Override
@@ -149,5 +155,19 @@ public class BoundCompactMachineBlockEntity extends BlockEntity implements IBoun
     public void setCustomName(Component customName) {
         this.customName = customName;
         this.setChanged();
+    }
+
+    @Override
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
+        if (cap == Machines.Attachments.MACHINE_COLOR){
+            return capability.cast();
+        }
+        return super.getCapability(cap);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        capability.invalidate();
     }
 }

@@ -26,7 +26,7 @@ public class MachineRoomMenu extends AbstractContainerMenu {
     private StructureTemplate roomBlocks;
 
     public MachineRoomMenu(int win, ChunkPos room, LevelBlockPosition machine, String roomName) {
-        super(UIRegistration.MACHINE_MENU.get(), win);
+        super(Rooms.Menus.MACHINE_MENU.get(), win);
         this.room = room;
         this.roomName = roomName;
         this.roomBlocks = new StructureTemplate();

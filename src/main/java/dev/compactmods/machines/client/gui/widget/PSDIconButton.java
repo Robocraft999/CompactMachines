@@ -1,9 +1,7 @@
 package dev.compactmods.machines.client.gui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import dev.compactmods.machines.core.CompactMachinesNet;
-import dev.compactmods.machines.room.client.MachineRoomScreen;
-import dev.compactmods.machines.room.network.PlayerRequestedTeleportPacket;
+import dev.compactmods.machines.network.CMNetworks;
+import dev.compactmods.machines.room.ui.preview.MachineRoomScreen;
 import dev.compactmods.machines.shrinking.Shrinking;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -34,7 +32,8 @@ public class PSDIconButton extends ExtendedButton {
             var menu = psd.parent.getMenu();
             var mach = psd.parent.getMachine();
             var room = menu.getRoom();
-            CompactMachinesNet.CHANNEL.sendToServer(new PlayerRequestedTeleportPacket(mach, room));
+            CMNetworks.sendToServer(new dev.compactmods.machines.network.PlayerRequestedTeleportPacket(menu.getMachine(), room));
+            //CompactMachinesNet.CHANNEL.sendToServer(new PlayerRequestedTeleportPacket(mach, room));
         }
     }
 

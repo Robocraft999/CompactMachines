@@ -3,10 +3,11 @@ package dev.compactmods.machines.shrinking;
 import dev.compactmods.machines.api.core.Messages;
 import dev.compactmods.machines.api.core.Tooltips;
 import dev.compactmods.machines.api.dimension.CompactDimension;
-import dev.compactmods.machines.client.gui.PersonalShrinkingDeviceScreen;
+import dev.compactmods.machines.api.room.RoomApi;
+import dev.compactmods.machines.api.room.RoomTranslations;
 import dev.compactmods.machines.i18n.TranslationUtil;
+import dev.compactmods.machines.room.RoomHelper;
 import dev.compactmods.machines.room.data.CompactRoomData;
-import dev.compactmods.machines.util.PlayerUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -56,14 +57,23 @@ public class PersonalShrinkingDevice extends Item {
         // If we aren't in the compact dimension, allow PSD guide usage
         // Prevents misfiring if a player is trying to leave a machine or set their spawn
         if (world.isClientSide && !world.dimension().equals(CompactDimension.LEVEL_KEY)) {
-            PersonalShrinkingDeviceScreen.show();
+            //PersonalShrinkingDeviceScreen.show();
             return InteractionResultHolder.success(stack);
         }
 
-        if (world instanceof ServerLevel && player instanceof ServerPlayer serverPlayer) {
-            ServerLevel playerDim = serverPlayer.serverLevel();
+        if (world instanceof ServerLevel playerDim && player instanceof ServerPlayer serverPlayer) {
             if (playerDim.dimension().equals(CompactDimension.LEVEL_KEY)) {
                 if (player.isShiftKeyDown()) {
+                    final var roomCode = RoomApi.chunkManager()
+                            .findRoomByChunk(serverPlayer.chunkPosition())
+                            .orElseThrow();
+
+                    final var spawnManager = RoomApi.spawnManager(roomCode);
+                    spawnManager.setPlayerSpawn(serverPlayer);
+
+                    player.displayClientMessage(RoomTranslations.ROOM_SPAWNPOINT_SET.apply(player, roomCode), true);
+
+
                     ChunkPos machineChunk = new ChunkPos(player.blockPosition());
 
                     final CompactRoomData intern = CompactRoomData.get(playerDim);
@@ -77,7 +87,7 @@ public class PersonalShrinkingDevice extends Item {
                     player.displayClientMessage(tc, true);
 
                 } else {
-                    PlayerUtil.teleportPlayerOutOfMachine(playerDim, serverPlayer);
+                    RoomHelper.teleportPlayerOutOfRoom(serverPlayer);
                 }
             }
         }

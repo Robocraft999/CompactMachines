@@ -1,6 +1,5 @@
 package dev.compactmods.machines.machine;
 
-import dev.compactmods.machines.api.machine.MachineColor;
 import dev.compactmods.machines.api.room.RoomTemplate;
 import dev.compactmods.machines.core.Registries;
 import dev.compactmods.machines.machine.block.BoundCompactMachineBlock;
@@ -14,7 +13,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraftforge.common.capabilities.Capability;

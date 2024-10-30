@@ -6,17 +6,12 @@ import dev.compactmods.machines.machine.Machines;
 import dev.compactmods.machines.machine.capability.IMachineColorCapability;
 import dev.compactmods.machines.machine.capability.MachineColorCapabilityImpl;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -77,12 +72,8 @@ public class UnboundCompactMachineBlockEntity extends BlockEntity implements IUn
 
     public Optional<RoomTemplate> template() {
         assert level != null;
-        var f = this.templateId();
-        System.out.println("TTT: '" + f + "'");
-
-        //FIXME
         //var t = RoomTemplate.INVALID_TEMPLATE;//this.components().getOrDefault(Machines.DataComponents.ROOM_TEMPLATE.get(), RoomTemplate.INVALID_TEMPLATE);
-        var t = new RoomTemplate(7, FastColor.ARGB32.color(255, 251, 242, 54));
+        RoomTemplate t = level.registryAccess().registry(RoomTemplate.REGISTRY_KEY).orElseThrow().get(templateId);
         return Optional.ofNullable(t);
     }
 

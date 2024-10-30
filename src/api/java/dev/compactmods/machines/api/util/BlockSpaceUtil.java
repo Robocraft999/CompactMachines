@@ -3,6 +3,7 @@ package dev.compactmods.machines.api.util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -36,10 +37,12 @@ public class BlockSpaceUtil {
         var offset = direction.getAxis().choose(area.getXsize(), area.getYsize(), area.getZsize())
                 / 2d;
 
-        if (direction.getAxisDirection() == Direction.AxisDirection.POSITIVE)
+        if (/*direction == Direction.UP || */(direction.getAxisDirection() == Direction.AxisDirection.NEGATIVE/* && direction.getAxis().isHorizontal()*/))
             offset -= 1;
 
         var centerWallPos = center.relative(direction, offset);
+        if (direction.getAxis().isVertical())
+            centerWallPos = centerWallPos.subtract(0, 1, 0);
         return BlockPos.containing(centerWallPos);
     }
 
@@ -65,9 +68,13 @@ public class BlockSpaceUtil {
         Vec3 wallCenter = Vec3.atCenterOf(wallCenterDistance);
 
         var normal = getPlaneAABB(wallDirection);
+        var x = area.getXsize() * normal.getXsize() + (wallDirection.getNormal().getX() * thickness);
+        var y = area.getYsize() * normal.getYsize() + (wallDirection.getNormal().getY() * thickness);
+        var z = area.getZsize() * normal.getZsize() + (wallDirection.getNormal().getZ() * thickness);
+        //BlockSpaceUtil.blocksInside(AABB.ofSize(wallCenter,x,y,z)).forEach(System.out::println);
         return AABB.ofSize(wallCenter,
-                area.getXsize() * normal.getXsize() + (wallDirection.getNormal().getX() * thickness),
-                area.getYsize() * normal.getYsize() + (wallDirection.getNormal().getY() * thickness),
-                area.getZsize() * normal.getZsize() + (wallDirection.getNormal().getZ() * thickness));
+                x,
+                y,
+                z);
     }
 }

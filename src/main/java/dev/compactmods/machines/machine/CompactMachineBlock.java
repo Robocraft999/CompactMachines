@@ -134,15 +134,15 @@ public class CompactMachineBlock extends Block implements EntityBlock {
     }
 
     public static Block getBySize(RoomSize size) {
-        return switch (size) {
+        /*return switch (size) {
             case TINY -> Machines.Blocks.UNBOUND_MACHINE.get();
             case SMALL -> Machines.Blocks.UNBOUND_MACHINE.get();
             case NORMAL -> Machines.Blocks.UNBOUND_MACHINE.get();
             case LARGE -> Machines.Blocks.UNBOUND_MACHINE.get();
             case GIANT -> Machines.Blocks.UNBOUND_MACHINE.get();
             case MAXIMUM -> Machines.Blocks.UNBOUND_MACHINE.get();
-        };
-
+        };*/
+        return null;
     }
 
     @Override
@@ -198,7 +198,7 @@ public class CompactMachineBlock extends Block implements EntityBlock {
                     var size = cmBlock.getSize();
                     try {
                         final var roomName = Rooms.getRoomName(server, room);
-                        NetworkHooks.openScreen((ServerPlayer) player, MachineRoomMenu.makeProvider(server, room, machine.getLevelPosition()), (buf) -> {
+                        /*NetworkHooks.openScreen((ServerPlayer) player, MachineRoomMenu.makeProvider(server, room, machine.getLevelPosition()), (buf) -> {
                             buf.writeBlockPos(pos);
                             buf.writeJsonWithCodec(LevelBlockPosition.CODEC, machine.getLevelPosition());
                             buf.writeChunkPos(room);
@@ -208,7 +208,7 @@ public class CompactMachineBlock extends Block implements EntityBlock {
                             }, () -> {
                                 buf.writeBoolean(false);
                             });
-                        });
+                        });*/
                     } catch (NonexistentRoomException e) {
                         e.printStackTrace();
                     }

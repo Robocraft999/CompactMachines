@@ -36,8 +36,11 @@ public class CompactRoomGenerator {
      */
     public static void generateCompactWall(LevelAccessor world, AABB outerBounds, Direction wallDirection, BlockState block) {
         AABB wallBounds = BlockSpaceUtil.getWallBounds(outerBounds, wallDirection);
+        System.out.println("Dir: " + wallDirection + " Length: " + BlockSpaceUtil.blocksInside(wallBounds).count() + " wallbounds: " + wallBounds);
+        //System.out.println(BlockSpaceUtil.blocksInside(wallBounds).toList());
         BlockSpaceUtil.blocksInside(wallBounds).forEach(wallBlock -> {
-            world.setBlock(wallBlock, block, Block.UPDATE_ALL);
+            var b = world.setBlock(wallBlock, block, Block.UPDATE_ALL);
+            System.out.println(wallBlock + " : " + b);
         });
     }
 
@@ -69,7 +72,9 @@ public class CompactRoomGenerator {
             generateCompactWall(world, outerBounds, dir, block);
 
         // Clear out the inside of the room
-        AABB machineInternal = outerBounds.deflate(1);
+        AABB machineInternal = outerBounds.deflate(1).move(1, 0, 1);
+        System.out.println(machineInternal);
+        //BlockSpaceUtil.blocksInside(machineInternal).forEach(System.out::println);
         BlockSpaceUtil.blocksInside(machineInternal)
                 .forEach(p -> world.setBlock(p, Blocks.AIR.defaultBlockState(), 7));
     }

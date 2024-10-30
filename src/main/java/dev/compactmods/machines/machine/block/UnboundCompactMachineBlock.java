@@ -2,7 +2,6 @@ package dev.compactmods.machines.machine.block;
 
 import dev.compactmods.machines.LoggingUtil;
 import dev.compactmods.machines.api.dimension.MissingDimensionException;
-import dev.compactmods.machines.api.machine.block.ICompactMachineBlockEntity;
 import dev.compactmods.machines.api.room.RoomApi;
 import dev.compactmods.machines.api.room.RoomTemplate;
 import dev.compactmods.machines.api.room.history.RoomEntryPoint;
