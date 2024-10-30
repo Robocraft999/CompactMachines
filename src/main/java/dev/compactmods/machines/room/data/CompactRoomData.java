@@ -190,11 +190,11 @@ public class CompactRoomData extends SavedData {
         }
 
         private void recalculateSize() {
-            BlockPos centerAtFloor = MathUtil.getCenterWithY(chunk, ServerConfig.MACHINE_FLOOR_Y.get());
+            /*BlockPos centerAtFloor = MathUtil.getCenterWithY(chunk, ServerConfig.MACHINE_FLOOR_Y.get());
             BlockPos centerSized = centerAtFloor.above(size.getInternalSize() / 2);
 
             this.spawn = new Vec3(centerAtFloor.getX(), centerAtFloor.getY() + 2, centerAtFloor.getZ());
-            this.center = centerSized;
+            this.center = centerSized;*/
         }
 
         public NewRoomRegistration owner(UUID owner) {

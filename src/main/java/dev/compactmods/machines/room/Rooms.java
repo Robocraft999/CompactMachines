@@ -27,6 +27,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -39,6 +40,7 @@ import net.minecraftforge.registries.RegistryObject;
 import javax.naming.OperationNotSupportedException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public interface Rooms {
@@ -104,7 +106,7 @@ public interface Rooms {
         int nextPosition = rooms.getNextSpiralPosition();
         Vec3i location = MathUtil.getRegionPositionByIndex(nextPosition);
 
-        BlockPos newCenter = MathUtil.getCenterWithY(location, ServerConfig.MACHINE_FLOOR_Y.get());
+        BlockPos newCenter = BlockPos.containing(MathUtil.getCenterWithY(location, ServerConfig.MACHINE_FLOOR_Y.get()));
 
         // Generate a new machine room
         CompactStructureGenerator.generateCompactStructure(compactWorld, size.toVec3(), newCenter);
@@ -157,23 +159,36 @@ public interface Rooms {
         return tem;
     }
 
-    static StructureTemplate getInternalBlocks(MinecraftServer server, String roomCode) {
+    static CompletableFuture<StructureTemplate> getInternalBlocks(MinecraftServer server, String roomCode) {
         final var template = new StructureTemplate();
 
         final var compactDim = server.getLevel(CompactDimension.LEVEL_KEY);
-        RoomApi.room(roomCode).ifPresentOrElse(inst -> {
-            var outer = inst.boundaries().outerBounds();
-            var inner = inst.boundaries().innerBounds();
-            template.fillFromWorld(compactDim, new BlockPos((int)inner.minX+1, (int)inner.minY - 1, (int)inner.minZ+1),
-                    new Vec3i((int)inner.getXsize(), (int)inner.getYsize() + 1, (int)inner.getZsize()), false, null);
-            LoggingUtil.modLog().info(template.getSize());
-        },
-        () -> {
-            //TODO throw error
-            LoggingUtil.modLog().error("Could not get Internal Blocks of room: " + roomCode);
-        }
-        );
-        return template;
+        final var chunkSource = compactDim.getChunkSource();
+
+        final var chunkLoading = RoomApi.chunks(roomCode)
+                .stream()
+                .map(cp -> chunkSource.getChunkFuture(cp.x, cp.z, ChunkStatus.FULL, true))
+                .toList();
+
+        final var awaitAllChunks = CompletableFuture.allOf(chunkLoading.toArray(new CompletableFuture[chunkLoading.size()]));
+        return awaitAllChunks.thenApply(ignored -> {
+            RoomApi.room(roomCode).ifPresentOrElse(inst -> {
+                    var bounds = inst.boundaries().innerBounds();
+                    template.fillFromWorld(
+                            compactDim,
+                            BlockPos.containing(bounds.minX, bounds.minY -1, bounds.minZ),
+                            new Vec3i((int)bounds.getXsize(), (int)bounds.getYsize() + 1, (int)bounds.getZsize()),
+                            false,
+                            null);
+                    LoggingUtil.modLog().info(template.getSize());
+                },
+                () -> {
+                    //TODO throw error
+                    LoggingUtil.modLog().error("Could not get Internal Blocks of room: " + roomCode);
+                }
+            );
+            return template;
+        });
     }
 
     public static void resetSpawn(MinecraftServer server, ChunkPos room) throws NonexistentRoomException {

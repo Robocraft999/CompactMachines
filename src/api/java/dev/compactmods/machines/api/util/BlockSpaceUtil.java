@@ -37,12 +37,10 @@ public class BlockSpaceUtil {
         var offset = direction.getAxis().choose(area.getXsize(), area.getYsize(), area.getZsize())
                 / 2d;
 
-        if (/*direction == Direction.UP || */(direction.getAxisDirection() == Direction.AxisDirection.NEGATIVE/* && direction.getAxis().isHorizontal()*/))
+        if (direction.getAxisDirection() == Direction.AxisDirection.POSITIVE)
             offset -= 1;
 
         var centerWallPos = center.relative(direction, offset);
-        if (direction.getAxis().isVertical())
-            centerWallPos = centerWallPos.subtract(0, 1, 0);
         return BlockPos.containing(centerWallPos);
     }
 

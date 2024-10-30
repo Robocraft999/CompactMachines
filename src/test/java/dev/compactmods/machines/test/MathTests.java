@@ -41,9 +41,9 @@ public class MathTests {
 
         tests.forEach((id, expectedChunk) -> {
             Vec3i byIndex = MathUtil.getRegionPositionByIndex(id);
-            BlockPos finalPos = MathUtil.getCenterWithY(byIndex, 0);
+            var finalPos = MathUtil.getCenterWithY(byIndex, 0);
 
-            ChunkPos calculatedChunk = new ChunkPos(finalPos);
+            ChunkPos calculatedChunk = new ChunkPos(BlockPos.containing(finalPos));
 
             String error = String.format("Generation did not match for %s.", id);
             if(!expectedChunk.equals(calculatedChunk))
@@ -55,7 +55,7 @@ public class MathTests {
 
     @GameTest(template = "empty_1x1", batch = TestBatches.MATH)
     public static void wallsAreCalculatedCorrectly(final GameTestHelper test){
-        AABB outerBounds = new AABB(0.5, 0, 0.5, 15.5, 15, 15.5);
+        AABB outerBounds = new AABB(1, 0, 1, 16, 15, 16);
         /*AABB up = BlockSpaceUtil.getWallBounds(outerBounds, Direction.UP);
         if (!up.equals(new AABB(1, 14, 1, 16, 15, 16)))
             test.fail(String.format("Wall bound (%s) did not match for direction %s.", up, Direction.UP));
