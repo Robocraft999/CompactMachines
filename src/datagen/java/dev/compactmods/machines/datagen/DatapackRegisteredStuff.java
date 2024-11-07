@@ -3,6 +3,8 @@ package dev.compactmods.machines.datagen;
 import dev.compactmods.machines.api.CompactMachinesApi;
 import dev.compactmods.machines.api.core.Constants;
 import dev.compactmods.machines.api.dimension.CompactDimension;
+import dev.compactmods.machines.api.machine.MachineColor;
+import dev.compactmods.machines.api.room.RoomDimensions;
 import dev.compactmods.machines.dimension.Dimension;
 import dev.compactmods.machines.api.room.RoomTemplate;
 import net.minecraft.core.HolderLookup;
@@ -103,6 +105,7 @@ public class DatapackRegisteredStuff extends DatapackBuiltinEntriesProvider {
         roomTemplate(ctx, "large", new RoomTemplate(9, FastColor.ARGB32.color(255, 33, 27, 46)));
         roomTemplate(ctx, "giant", new RoomTemplate(11, FastColor.ARGB32.color(255, 67, 214, 205)));
         roomTemplate(ctx, "colossal", new RoomTemplate(13, FastColor.ARGB32.color(255, 66, 63, 66)));
+        roomTemplate(ctx, "weird", new RoomTemplate(new RoomDimensions(4, 20, 7), MachineColor.fromARGB(FastColor.ARGB32.color(255, 255, 0, 0)), Collections.emptyList()));
     }
 
     private static void roomTemplate(BootstapContext<RoomTemplate> ctx, String name, RoomTemplate template) {
