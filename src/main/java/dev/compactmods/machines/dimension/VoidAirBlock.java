@@ -1,25 +1,23 @@
 package dev.compactmods.machines.dimension;
 
-import dev.compactmods.machines.api.room.IRoomHistory;
+import dev.compactmods.machines.api.dimension.CompactDimension;
 import dev.compactmods.machines.config.ServerConfig;
-import dev.compactmods.machines.room.RoomCapabilities;
 import dev.compactmods.machines.util.PlayerUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
-import static dev.compactmods.machines.api.core.Constants.MOD_ID;
-
 
 public class VoidAirBlock extends AirBlock {
-    //final public static DamageSource DAMAGE_SOURCE = new DamageSource(MOD_ID + "_voidair");
+    // FIXME final public static DamageSource DAMAGE_SOURCE = new DamageSource(MOD_ID + "_voidair");
 
     public VoidAirBlock() {
         super(BlockBehaviour.Properties.of()
@@ -31,22 +29,57 @@ public class VoidAirBlock extends AirBlock {
         );
     }
 
+    @Override
+    public boolean canEntityDestroy(BlockState state, BlockGetter level, BlockPos pos, Entity entity) {
+        return false;
+    }
+
+    @Override
+    public boolean canHarvestBlock(BlockState state, BlockGetter level, BlockPos pos, Player player) {
+        return false;
+    }
 
     @Override
     public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity pEntity) {
-        if (ServerConfig.isAllowedOutsideOfMachine()) return;
         if (pLevel.isClientSide) return;
+        if (!CompactDimension.isLevelCompact(pLevel)) return;
 
         if (pEntity instanceof ServerPlayer player) {
-            if (player.isCreative()) return;
+            // If players are allowed outside of machine bounds, early exit -- but damage them if configured
+            if (ServerConfig.isAllowedOutsideOfMachine()) {
+                tryDamagingAdventurousPlayer(pLevel, player);
+                return;
+            }
 
-            player.addEffect(new MobEffectInstance(MobEffects.POISON, 5 * 20));
-            player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 5 * 20));
-            player.hurt(pLevel.damageSources().fellOutOfWorld(), 1);
+            tryDamagingAdventurousPlayer(pLevel, player);
 
-            PlayerUtil.howDidYouGetThere(player);
-            player.getCapability(RoomCapabilities.ROOM_HISTORY).ifPresent(IRoomHistory::clear);
+            // FIXME - Achievement
+            // PlayerUtil.howDidYouGetThere(player);
             PlayerUtil.teleportPlayerToRespawnOrOverworld(player.server, player);
         }
     }
+
+    /**
+     * Attempts to inflict the bad effects on players that are touching a void air block.
+     * Does nothing to players that are in creative mode.
+     *
+     * @param pLevel
+     * @param player
+     */
+    private static void tryDamagingAdventurousPlayer(Level pLevel, ServerPlayer player) {
+        if (player.isCreative()) return;
+
+        if (ServerConfig.damagePlayersOutOfBounds()) {
+            if(!player.hasEffect(MobEffects.CONFUSION)) {
+                player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 5 * 20));
+                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 5 * 20));
+                player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 5 * 20));
+            }
+
+            if (player.getHealth() > 1) {
+                player.hurt(pLevel.damageSources().fellOutOfWorld(), player.getHealth() - 1);
+            }
+        }
+    }
+
 }

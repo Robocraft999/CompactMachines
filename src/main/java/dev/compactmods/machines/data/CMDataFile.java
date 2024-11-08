@@ -14,11 +14,7 @@ public interface CMDataFile {
         return "1.0.0";
     }
 
-    default Path getDataLocation(MinecraftServer server) {
-        return server.getWorldPath(LevelResource.ROOT)
-                .resolve(CompactMachinesApi.MOD_ID)
-                .resolve("data");
-    }
+    Path getDataLocation(MinecraftServer server);
 
     static void ensureDirExists(Path dir) {
         if(!Files.exists(dir)) {

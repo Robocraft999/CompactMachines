@@ -5,8 +5,6 @@ import dev.compactmods.machines.api.core.Constants;
 import dev.compactmods.machines.api.core.Tooltips;
 import dev.compactmods.machines.api.dimension.CompactDimension;
 import dev.compactmods.machines.i18n.TranslationUtil;
-import dev.compactmods.machines.machine.CompactMachineBlock;
-import dev.compactmods.machines.machine.CompactMachineBlockEntity;
 import dev.compactmods.machines.room.data.CompactRoomData;
 import dev.compactmods.machines.tunnel.TunnelItem;
 import dev.compactmods.machines.tunnel.graph.TunnelConnectionGraph;
@@ -32,7 +30,7 @@ public class CompactMachineProvider implements IProbeInfoProvider {
 
     @Override
     public void addProbeInfo(ProbeMode probeMode, IProbeInfo info, Player player, Level level, BlockState blockState, IProbeHitData hitData) {
-        if (!(blockState.getBlock() instanceof CompactMachineBlock mach))
+        /*if (!(blockState.getBlock() instanceof CompactMachineBlock mach))
             return;
 
         final var server = level.getServer();
@@ -113,6 +111,6 @@ public class CompactMachineProvider implements IProbeInfoProvider {
 //                        info.element(el);
                 });
             });
-        }
+        }*/
     }
 }

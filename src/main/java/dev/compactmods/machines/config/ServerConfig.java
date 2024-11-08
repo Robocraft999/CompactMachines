@@ -23,6 +23,7 @@ public class ServerConfig {
     private static ForgeConfigSpec.IntValue CHANGE_ROOM_UPGRADES;
 
     private static ForgeConfigSpec.BooleanValue ALLOWED_OUTSIDE_MACHINE;
+    private static ForgeConfigSpec.BooleanValue DAMAGE_PLAYERS_OUTSIDE_MACHINE;
 
     static {
         generateConfig();
@@ -57,6 +58,11 @@ public class ServerConfig {
                 .comment("Specify if we want to damage player's that managed to escape the boundries")
                 .comment("default: false")
                 .define("allowOutside", false);
+
+        DAMAGE_PLAYERS_OUTSIDE_MACHINE = builder
+                .comment("Specify if we want to damage players that are outside the room boundaries")
+                .comment("default: true")
+                .define("damagePlayersOutOfBounds", true);
 
         builder.pop();
 
@@ -105,5 +111,8 @@ public class ServerConfig {
 
     public static Boolean isAllowedOutsideOfMachine() {
         return ALLOWED_OUTSIDE_MACHINE.get();
+    }
+    public static Boolean damagePlayersOutOfBounds() {
+        return DAMAGE_PLAYERS_OUTSIDE_MACHINE.get();
     }
 }

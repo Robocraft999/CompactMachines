@@ -9,7 +9,6 @@ import dev.compactmods.machines.config.CommonConfig;
 import dev.compactmods.machines.config.EnableVanillaRecipesConfigCondition;
 import dev.compactmods.machines.config.ServerConfig;
 import dev.compactmods.machines.core.Registries;
-import dev.compactmods.machines.core.UIRegistration;
 import dev.compactmods.machines.dimension.Dimension;
 import dev.compactmods.machines.graph.Graph;
 import dev.compactmods.machines.machine.Machines;
@@ -85,7 +84,6 @@ public class CompactMachines {
         Shrinking.prepare();
         CreativeTabs.prepare();
 
-        UIRegistration.prepare();
         Dimension.prepare();
         MachineRoomUpgrades.prepare();
         Graph.prepare();

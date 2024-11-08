@@ -4,7 +4,6 @@ import dev.compactmods.machines.CompactMachines;
 import dev.compactmods.machines.advancement.AdvancementTriggers;
 import dev.compactmods.machines.api.core.Constants;
 import dev.compactmods.machines.network.CMNetworks;
-import dev.compactmods.machines.room.network.RoomNetworkHandler;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -16,7 +15,6 @@ public class ModBusEvents {
     public static void setup(final FMLCommonSetupEvent event) {
         CompactMachines.LOGGER.trace("Initializing network handler.");
         CompactMachinesNet.setupMessages();
-        RoomNetworkHandler.setupMessages();
         CMNetworks.register();
 
         CompactMachines.LOGGER.trace("Registering advancement triggers.");

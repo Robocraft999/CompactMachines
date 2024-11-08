@@ -84,7 +84,7 @@ public class BoundCompactMachineBlock extends CompactMachineBlock implements Ent
                 return InteractionResult.SUCCESS;
             }
 
-            return InteractionResult.PASS;
+            return InteractionResult.CONSUME;
         } else {
             //Without Item
             if (!pLevel.isClientSide && !(pPlayer instanceof FakePlayer)) {

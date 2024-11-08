@@ -1,7 +1,10 @@
 package dev.compactmods.machines.machine.block;
 
+import dev.compactmods.machines.api.machine.MachineColor;
 import dev.compactmods.machines.api.machine.block.ICompactMachineBlockEntity;
 import dev.compactmods.machines.machine.Machines;
+import dev.compactmods.machines.network.CMNetworks;
+import dev.compactmods.machines.network.MachineColorSyncPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.server.level.ServerLevel;
@@ -55,6 +58,8 @@ public class CompactMachineBlock extends Block {
 
             /*PacketDistributor.sendToPlayersTrackingChunk(
                     level, new ChunkPos(pos), new MachineColorSyncPacket(GlobalPos.of(level.dimension(), pos), color.getFireworkColor()));*/
+            ChunkPos chunkPos = new ChunkPos(pos);
+            CMNetworks.sendToTrackingChunk(new MachineColorSyncPacket(GlobalPos.of(level.dimension(), pos), MachineColor.fromARGB(color.getFireworkColor())), level, chunkPos);
 
             if (!player.isCreative())
                 mainItem.shrink(1);

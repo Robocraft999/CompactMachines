@@ -1,12 +1,9 @@
 package dev.compactmods.machines.wall;
 
-import dev.compactmods.machines.api.core.Tooltips;
-import dev.compactmods.machines.i18n.TranslationUtil;
-import dev.compactmods.machines.room.Rooms;
-import net.minecraft.ChatFormatting;
+import dev.compactmods.machines.api.Translations;
+import dev.compactmods.machines.api.WallConstants;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -26,18 +23,9 @@ public class ItemBlockWall extends BlockItem {
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
-        if (stack.getItem() == Rooms.Items.ITEM_SOLID_WALL.get()) {
-            MutableComponent text;
-            if (Screen.hasShiftDown()) {
-                text = TranslationUtil.tooltip(Tooltips.Details.SOLID_WALL)
-                        .withStyle(ChatFormatting.DARK_RED);
-            } else {
-                text = TranslationUtil.tooltip(Tooltips.HINT_HOLD_SHIFT)
-                        .withStyle(ChatFormatting.DARK_GRAY)
-                        .withStyle(ChatFormatting.ITALIC);
-            }
-
-            tooltip.add(text);
+        if (stack.is(WallConstants.TAG_SOLID_WALL_ITEMS)) {
+            tooltip.add(Screen.hasShiftDown() ?
+                    Translations.UNBREAKABLE_BLOCK.get() : Translations.HINT_HOLD_SHIFT.get());
         }
 
     }

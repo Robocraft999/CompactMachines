@@ -3,8 +3,6 @@ package dev.compactmods.machines.room.data;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import dev.compactmods.machines.machine.CompactMachineBlockEntity;
-import dev.compactmods.machines.machine.CompactMachineItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
@@ -25,11 +23,11 @@ public class CopyRoomBindingFunction extends LootItemConditionalFunction {
     @Override
     protected ItemStack run(ItemStack stack, LootContext ctx) {
         var data = ctx.getParam(LootContextParams.BLOCK_ENTITY);
-        if(data instanceof CompactMachineBlockEntity machine) {
+        /*if(data instanceof CompactMachineBlockEntity machine) {
             machine.getConnectedRoom().ifPresent(room -> {
                 CompactMachineItem.setRoom(stack, room);
             });
-        }
+        }*/
 
         return stack;
     }

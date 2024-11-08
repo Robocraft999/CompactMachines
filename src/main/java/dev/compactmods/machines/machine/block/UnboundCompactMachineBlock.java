@@ -5,6 +5,7 @@ import dev.compactmods.machines.api.dimension.MissingDimensionException;
 import dev.compactmods.machines.api.room.RoomApi;
 import dev.compactmods.machines.api.room.RoomTemplate;
 import dev.compactmods.machines.api.room.history.RoomEntryPoint;
+import dev.compactmods.machines.api.room.template.RoomTemplateHelper;
 import dev.compactmods.machines.api.shrinking.PSDTags;
 import dev.compactmods.machines.machine.Machines;
 import dev.compactmods.machines.room.RoomHelper;
@@ -85,7 +86,8 @@ public class UnboundCompactMachineBlock extends CompactMachineBlock implements E
         MinecraftServer server = level.getServer();
         if (stack.is(PSDTags.ITEM) && player instanceof ServerPlayer sp) {
             level.getBlockEntity(pos, Machines.BlockEntities.UNBOUND_MACHINE.get()).ifPresent(unboundEntity -> {
-                RoomTemplate template = unboundEntity.template().orElse(RoomTemplate.INVALID_TEMPLATE);
+                //RoomTemplate template = unboundEntity.template().orElse(RoomTemplate.INVALID_TEMPLATE);
+                RoomTemplate template = RoomTemplateHelper.getTemplate(level, unboundEntity.templateId());
                 if (!template.equals(RoomTemplate.INVALID_TEMPLATE)) {
                     AtomicInteger color = new AtomicInteger();
                     unboundEntity.getCapability(Machines.Attachments.MACHINE_COLOR).ifPresent(cap -> color.set(cap.getColor()));

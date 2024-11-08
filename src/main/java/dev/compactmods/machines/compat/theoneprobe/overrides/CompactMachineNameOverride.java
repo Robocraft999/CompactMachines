@@ -1,7 +1,6 @@
 package dev.compactmods.machines.compat.theoneprobe.overrides;
 
-import dev.compactmods.machines.machine.CompactMachineBlock;
-import dev.compactmods.machines.machine.CompactMachineBlockEntity;
+import dev.compactmods.machines.machine.block.CompactMachineBlock;
 import dev.compactmods.machines.room.Rooms;
 import dev.compactmods.machines.room.exceptions.NonexistentRoomException;
 import mcjty.theoneprobe.Tools;
@@ -17,7 +16,7 @@ public class CompactMachineNameOverride implements IBlockDisplayOverride {
     @Override
     public boolean overrideStandardInfo(ProbeMode mode, IProbeInfo probeInfo, Player player, Level level, BlockState blockState, IProbeHitData hitData) {
         if(blockState.getBlock() instanceof CompactMachineBlock) {
-            if (level.getBlockEntity(hitData.getPos()) instanceof CompactMachineBlockEntity mach) {
+            /*if (level.getBlockEntity(hitData.getPos()) instanceof CompactMachineBlockEntity mach) {
                 final var cr = mach.getConnectedRoom();
                 if(cr.isEmpty())
                     return false;
@@ -53,7 +52,7 @@ public class CompactMachineNameOverride implements IBlockDisplayOverride {
                 });
 
                 return true;
-            }
+            }*/
         }
 
         return false;

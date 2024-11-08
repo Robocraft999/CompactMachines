@@ -7,7 +7,6 @@ import dev.compactmods.machines.api.room.upgrade.RoomUpgrade;
 import dev.compactmods.machines.api.tunnels.TunnelDefinition;
 import dev.compactmods.machines.datagen.AdvancementLangBuilder;
 import dev.compactmods.machines.i18n.TranslationUtil;
-import dev.compactmods.machines.machine.CompactMachineBlock;
 import dev.compactmods.machines.tunnel.Tunnels;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
@@ -41,11 +40,6 @@ public abstract class BaseLangGenerator extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
-        // Machine Block names
-        /*for(var size : RoomSize.values()) {
-            add(CompactMachineBlock.getBySize(size), String.format("%s (%s)", getMachineTranslation(), getSizeTranslation(size)));
-        }*/
-
         // Direction Names
         for (var dir : Direction.values()) {
             add(Constants.MOD_ID + ".direction." + dir.getSerializedName(), getDirectionTranslation(dir));
@@ -68,50 +62,6 @@ public abstract class BaseLangGenerator extends LanguageProvider {
 
     protected void addCreativeTab(ResourceLocation id, String translation) {
         add(Util.makeDescriptionId("itemGroup", id), translation);
-    }
-
-    protected void addAdvancementTranslations() {
-        advancement(Advancements.FOUNDATIONS)
-                .title("Foundations")
-                .description("Obtain a breakable wall block.");
-
-        advancement(Advancements.CLAIMED_GIANT_MACHINE)
-                .title("Got Enough Space?")
-                .description("Claim a giant compact machine.");
-
-        advancement(Advancements.CLAIMED_LARGE_MACHINE)
-                .title("Room to Grow")
-                .description("Claim a large compact machine.");
-
-        advancement(Advancements.CLAIMED_MAX_MACHINE)
-                .title("Room for Activities!")
-                .description("Claim a maximum compact machine.");
-
-        advancement(Advancements.CLAIMED_NORMAL_MACHINE)
-                .title("Bigger on the Inside")
-                .description("Claim a normal compact machine.");
-
-        advancement(Advancements.CLAIMED_SMALL_MACHINE)
-                .title("I Can Breathe")
-                .description("Claim a small compact machine.");
-
-        advancement(Advancements.CLAIMED_TINY_MACHINE)
-                .title("Small Spaces, Big Ideas")
-                .description("Claim a tiny compact machine.");
-
-        advancement(Advancements.GOT_SHRINKING_DEVICE)
-                .title("Personal Shrinking Device")
-                .description("Obtain a Personal Shrinking Device");
-
-        advancement(Advancements.HOW_DID_YOU_GET_HERE)
-                .title("How Did You Get Here?!")
-                .description("Which machine is the player in?!");
-
-        advancement(Advancements.ROOT).title("Compact Machines").noDesc();
-
-        advancement(Advancements.RECURSIVE_ROOMS)
-                .title("Recursive Rooms")
-                .description("To understand recursion, you must first understand recursion.");
     }
 
     protected AdvancementLangBuilder advancement(ResourceLocation advancement) {

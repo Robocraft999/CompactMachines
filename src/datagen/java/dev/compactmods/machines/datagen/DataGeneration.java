@@ -3,7 +3,6 @@ package dev.compactmods.machines.datagen;
 import dev.compactmods.machines.CompactMachines;
 import dev.compactmods.machines.api.core.Constants;
 import dev.compactmods.machines.datagen.lang.EnglishLangGenerator;
-import dev.compactmods.machines.datagen.lang.RussianLangGenerator;
 import dev.compactmods.machines.datagen.tags.BlockTagGenerator;
 import dev.compactmods.machines.datagen.tags.ItemTagGenerator;
 import net.minecraft.data.loot.LootTableProvider;
@@ -44,6 +43,5 @@ public class DataGeneration {
         generator.addProvider(event.includeClient(), new ItemModelGenerator(packOut, helper));
 
         generator.addProvider(event.includeClient(), new EnglishLangGenerator(generator));
-        generator.addProvider(event.includeClient(), new RussianLangGenerator(generator));
     }
 }

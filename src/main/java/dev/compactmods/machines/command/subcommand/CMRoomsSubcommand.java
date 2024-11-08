@@ -3,102 +3,162 @@ package dev.compactmods.machines.command.subcommand;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.compactmods.machines.CompactMachines;
-import dev.compactmods.machines.api.core.CMCommands;
-import dev.compactmods.machines.api.core.Messages;
+import dev.compactmods.machines.api.command.CommandTranslations;
 import dev.compactmods.machines.api.dimension.CompactDimension;
-import dev.compactmods.machines.i18n.TranslationUtil;
-import dev.compactmods.machines.machine.CompactMachineBlock;
-import dev.compactmods.machines.machine.CompactMachineBlockEntity;
-import dev.compactmods.machines.room.Rooms;
-import dev.compactmods.machines.room.data.CompactRoomData;
-import dev.compactmods.machines.room.exceptions.NonexistentRoomException;
-import net.minecraft.ChatFormatting;
-import net.minecraft.commands.CommandRuntimeException;
+import dev.compactmods.machines.api.machine.MachineConstants;
+import dev.compactmods.machines.api.machine.MachineTranslations;
+import dev.compactmods.machines.api.room.RoomApi;
+import dev.compactmods.machines.api.room.RoomTranslations;
+import dev.compactmods.machines.machine.block.BoundCompactMachineBlockEntity;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
+import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.ChunkPos;
+
+import java.util.stream.LongStream;
 
 public class CMRoomsSubcommand {
 
     public static LiteralArgumentBuilder<CommandSourceStack> make() {
+        // /cm rooms
         final LiteralArgumentBuilder<CommandSourceStack> subRoot = LiteralArgumentBuilder.literal("rooms");
 
-        subRoot.then(Commands.literal("machblock").then(
+        // /cm rooms summary
+        final var summary = Commands.literal("summary")
+                .executes(CMRoomsSubcommand::exec);
+
+        // /cm rooms find ...
+        final var find = Commands.literal("find");
+
+        // /cm rooms find chunk
+        find.then(Commands.literal("chunk").then(
+                // /cm rooms find chunk [pos]
+                Commands.argument("chunk", ColumnPosArgument.columnPos())
+                        .executes(CMRoomsSubcommand::fetchByChunkPos)
+        ));
+
+        // /cm rooms find connected_to
+        find.then(Commands.literal("connected_to").then(
+                // /cm rooms find connected_to [pos]
                 Commands.argument("pos", BlockPosArgument.blockPos())
                         .executes(CMRoomsSubcommand::fetchByMachineBlock)
         ));
 
-        subRoot.then(Commands.literal("findplayer").then(
+        // /cm rooms find player
+        find.then(Commands.literal("player").then(
+                // /cm rooms find player [@p]
                 Commands.argument("player", EntityArgument.player())
                         .executes(CMRoomsSubcommand::findByContainingPlayer)
         ));
 
-        subRoot.then(Commands.literal("ownedby").then(
-                Commands.argument("owner", EntityArgument.player())
-                        .executes(CMRoomsSubcommand::findByOwner)
-        ));
+//        find.then(Commands.literal("owner").then(
+//                Commands.argument("owner", EntityArgument.player())
+//                        .executes(CMRoomsSubcommand::findByOwner)
+//        ));
 
+        subRoot.then(summary);
+        subRoot.then(find);
         return subRoot;
+    }
+
+    private static int exec(CommandContext<CommandSourceStack> ctx) {
+        var src = ctx.getSource();
+        var serv = src.getServer();
+
+        final var ls = LongStream.builder();
+
+        // FIXME: Per-dimension machine count
+//        serv.getAllLevels().forEach(sl -> {
+//            final var machineData = DimensionMachineGraph.forDimension(sl);
+//            long numRegistered = machineData.machines().count();
+//
+//            if(numRegistered > 0) {
+//                src.sendSuccess(() -> TranslationUtil.command(CMCommands.MACHINE_REG_DIM, sl.dimension().location().toString(), numRegistered), false);
+//                ls.add(numRegistered);
+//            }
+//        });
+
+//        long grandTotal = ls.build().sum();
+//        src.sendSuccess(() -> Component.translatable(CommandTranslations.IDs.MACHINE_REG_TOTAL, grandTotal).withStyle(ChatFormatting.GOLD), false);
+
+        final var roomCount = RoomApi.registrar().count();
+        src.sendSuccess(() -> Component.translatable(CommandTranslations.IDs.ROOM_COUNT, roomCount), false);
+
+        return 0;
+    }
+
+    private static int fetchByChunkPos(CommandContext<CommandSourceStack> ctx) {
+        final var chunkPos = ColumnPosArgument.getColumnPos(ctx, "chunk");
+
+        final var m = RoomApi.chunkManager()
+                .findRoomByChunk(chunkPos.toChunkPos())
+
+                // FIXME Translations
+                .map(code -> Component.translatableWithFallback("commands.cm.room_by_chunk", "Room at chunk %s has ID: %s", chunkPos.toString(), code))
+                .orElse(Component.literal("Room not found at chunk: " + chunkPos));
+
+        ctx.getSource().sendSuccess(() -> m, false);
+
+        return 0;
     }
 
     private static int fetchByMachineBlock(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         final var block = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
         final var level = ctx.getSource().getLevel();
 
-        if(!(level.getBlockState(block).getBlock() instanceof CompactMachineBlock b))
-            throw new CommandRuntimeException(TranslationUtil.command(CMCommands.NOT_A_MACHINE_BLOCK));
+        if (!level.getBlockState(block).is(MachineConstants.MACHINE_BLOCK)) {
+            ctx.getSource().sendFailure(MachineTranslations.NOT_A_MACHINE_BLOCK.apply(block));
+            return -1;
+        }
 
-        if(level.getBlockEntity(block) instanceof CompactMachineBlockEntity be) {
-            be.getConnectedRoom().ifPresent(room -> {
-                final var m = TranslationUtil.message(Messages.MACHINE_ROOM_INFO, block, b.getSize(), room);
-                ctx.getSource().sendSuccess(() -> m, false);
+        if (level.getBlockEntity(block) instanceof BoundCompactMachineBlockEntity be) {
+            final var roomCode = be.connectedRoom();
+            RoomApi.registrar().get(roomCode).ifPresent(roomInfo -> {
+                ctx.getSource().sendSuccess(() -> RoomTranslations.MACHINE_ROOM_INFO.apply(block, roomInfo), false);
             });
+        } else {
+            // FIXME Translations
+            ctx.getSource().sendFailure(Component.literal("Does not appear to be a bound machine block."));
         }
 
         return 0;
     }
 
     private static int findByContainingPlayer(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        final var source = ctx.getSource();
+
         final var player = EntityArgument.getPlayer(ctx, "player");
-        final var server = ctx.getSource().getServer();
 
-        final var playerChunk = player.chunkPosition();
-        final var playerLevel = player.level();
-
-        if (!playerLevel.dimension().equals(CompactDimension.LEVEL_KEY)) {
-            throw new CommandRuntimeException(TranslationUtil.command(CMCommands.WRONG_DIMENSION));
+        if (!player.level().dimension().equals(CompactDimension.LEVEL_KEY)) {
+            source.sendFailure(RoomTranslations.PLAYER_NOT_IN_COMPACT_DIM.apply(player));
+            return -1;
         }
 
-        try {
-            final var roomSize = Rooms.sizeOf(server, playerChunk);
-            final var m = TranslationUtil.message(Messages.PLAYER_ROOM_INFO, player.getDisplayName(), playerChunk.toString(), roomSize);
-            ctx.getSource().sendSuccess(() -> m, false);
-        } catch (NonexistentRoomException e) {
-            CompactMachines.LOGGER.error("Player is inside an unregistered chunk ({}) in the compact world.", playerChunk, e);
-            final var tc = Component.literal("%s, %s".formatted(playerChunk.x, playerChunk.z))
-                    .withStyle(ChatFormatting.RED);
+        final var m = RoomApi.chunkManager()
+                .findRoomByChunk(player.chunkPosition())
+                .map(code -> RoomTranslations.PLAYER_ROOM_INFO.apply(player, code))
+                .orElse(RoomTranslations.UNKNOWN_ROOM_BY_PLAYER_CHUNK.apply(player));
 
-            throw new CommandRuntimeException(TranslationUtil.message(Messages.UNKNOWN_ROOM_CHUNK, tc));
-        }
+        source.sendSuccess(() -> m, false);
 
         return 0;
     }
 
     public static int findByOwner(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         final var owner = EntityArgument.getPlayer(ctx, "owner");
-        final var server = ctx.getSource().getServer();
-        final var compactDim = server.getLevel(CompactDimension.LEVEL_KEY);
+        final var source = ctx.getSource();
 
-        final var rooms = CompactRoomData.get(compactDim);
-        rooms.streamRooms()
-                .filter(r -> r.getOwner().equals(owner.getUUID()))
-                .forEach(data -> {
-                    ctx.getSource().sendSuccess(() -> Component.literal("Room: " + new ChunkPos(data.getCenter())), false);
-                });
+//        final var owned = CompactMachines.roomApi().owners().findByOwner(owner.getUUID()).toList();
+//
+//        // TODO Localization
+//        if (owned.isEmpty()) {
+//            source.sendSuccess(() -> Component.literal("No rooms found."), false);
+//        } else {
+//            owned.forEach(roomCode -> source.sendSuccess(() -> Component.literal("Room: " + roomCode), false));
+//        }
+
 
         return 0;
     }

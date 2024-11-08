@@ -1,5 +1,6 @@
 package dev.compactmods.machines.shrinking;
 
+import dev.compactmods.machines.api.Translations;
 import dev.compactmods.machines.api.core.Messages;
 import dev.compactmods.machines.api.core.Tooltips;
 import dev.compactmods.machines.api.dimension.CompactDimension;
@@ -35,15 +36,16 @@ public class PersonalShrinkingDevice extends Item {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
+        tooltip.add(Screen.hasShiftDown() ? Translations.UNBREAKABLE_BLOCK.get() : Translations.HINT_HOLD_SHIFT.get());
 
-        if (Screen.hasShiftDown()) {
+        /*if (Screen.hasShiftDown()) {
             tooltip.add(TranslationUtil.tooltip(Tooltips.Details.PERSONAL_SHRINKING_DEVICE)
                     .withStyle(ChatFormatting.YELLOW));
         } else {
             tooltip.add(TranslationUtil.tooltip(Tooltips.HINT_HOLD_SHIFT)
                     .withStyle(ChatFormatting.DARK_GRAY)
                     .withStyle(ChatFormatting.ITALIC));
-        }
+        }*/
 
     }
 
@@ -74,7 +76,7 @@ public class PersonalShrinkingDevice extends Item {
                     player.displayClientMessage(RoomTranslations.ROOM_SPAWNPOINT_SET.apply(player, roomCode), true);
 
 
-                    ChunkPos machineChunk = new ChunkPos(player.blockPosition());
+                    /*ChunkPos machineChunk = new ChunkPos(player.blockPosition());
 
                     final CompactRoomData intern = CompactRoomData.get(playerDim);
 
@@ -84,7 +86,7 @@ public class PersonalShrinkingDevice extends Item {
                     MutableComponent tc = TranslationUtil.message(Messages.ROOM_SPAWNPOINT_SET)
                             .withStyle(ChatFormatting.GREEN);
 
-                    player.displayClientMessage(tc, true);
+                    player.displayClientMessage(tc, true);*/
 
                 } else {
                     RoomHelper.teleportPlayerOutOfRoom(serverPlayer);

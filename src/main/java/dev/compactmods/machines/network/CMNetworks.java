@@ -5,7 +5,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
@@ -28,6 +30,7 @@ public class CMNetworks {
     public static void register(){
         registerServerToClient(SyncRoomMetadataPacket.class, SyncRoomMetadataPacket::decode);
         registerServerToClient(InitialRoomBlockDataPacket.class, InitialRoomBlockDataPacket::decode);
+        registerServerToClient(MachineColorSyncPacket.class, MachineColorSyncPacket::decode);
 
         registerClientToServer(PlayerRequestedTeleportPacket.class, PlayerRequestedTeleportPacket::decode);
         registerClientToServer(PlayerStartedRoomTrackingPacket.class, PlayerStartedRoomTrackingPacket::decode);
@@ -68,6 +71,10 @@ public class CMNetworks {
         if (level != null){
             HANDLER.send(PacketDistributor.NEAR.with(PacketDistributor.TargetPoint.p(pos.getX(), pos.getY(), pos.getZ(), 25, level.dimension())), msg);
         }
+    }
+
+    public static <MSG extends ICMPacket> void sendToTrackingChunk(MSG msg, Level level, ChunkPos chunkPos){
+        HANDLER.send(PacketDistributor.TRACKING_CHUNK.with(() -> new LevelChunk(level, chunkPos)), msg);
     }
 
 

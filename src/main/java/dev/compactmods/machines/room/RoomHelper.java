@@ -47,9 +47,8 @@ public abstract class RoomHelper {
     public static void teleportPlayerIntoMachine(Level machineLevel, ServerPlayer player, GlobalPos machinePos, String roomCode) {
         MinecraftServer serv = machineLevel.getServer();
 
-
-        LOGS.debug("Player {} entering machine at: {}", player.getName(), machinePos);
         RoomApi.room(roomCode).ifPresent(roomInfo -> {
+            LOGS.debug("Player {} entering machine at: {}", player.getName(), machinePos);
             try {
                 teleportPlayerIntoRoom(serv, player, roomInfo, RoomEntryPoint.playerEnteringMachine(player));
             } catch (MissingDimensionException e) {

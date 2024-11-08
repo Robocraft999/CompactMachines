@@ -18,12 +18,12 @@ public record PlayerRequestedTeleportPacket(GlobalPos machine, String roomCode) 
 
     @Override
     public void encode(FriendlyByteBuf buffer) {
-        buffer.writeJsonWithCodec(GlobalPos.CODEC, machine);
+        buffer.writeGlobalPos(machine);
         buffer.writeUtf(roomCode);
     }
 
     public static PlayerRequestedTeleportPacket decode(FriendlyByteBuf buf) {
-        var machine = buf.readJsonWithCodec(GlobalPos.CODEC);
+        var machine = buf.readGlobalPos();
         var roomCode = buf.readUtf();
         return new PlayerRequestedTeleportPacket(machine, roomCode);
     }

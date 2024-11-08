@@ -10,21 +10,26 @@ import dev.compactmods.machines.util.PlayerUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
 public class CMEjectSubcommand {
     public static ArgumentBuilder<CommandSourceStack, ?> make() {
         return Commands.literal("eject")
                 .executes(CMEjectSubcommand::execExecutingPlayer)
-                    .then(Commands.argument("player", EntityArgument.player())
-                    .requires(cs -> cs.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("player", EntityArgument.player())
+                        .requires(cs -> cs.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .executes(CMEjectSubcommand::execSpecificPlayer));
     }
 
     private static int execSpecificPlayer(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         Collection<ServerPlayer> ent = EntityArgument.getPlayers(ctx, "player");
         ent.forEach(player -> {
-            player.getCapability(RoomCapabilities.ROOM_HISTORY).ifPresent(IRoomHistory::clear);
+            //FIXME
+            /*CompactMachines.playerHistoryApi()
+                    .entryPoints()
+                    .clearHistory(player);*/
+
             PlayerUtil.teleportPlayerToRespawnOrOverworld(ctx.getSource().getServer(), player);
         });
 
@@ -33,8 +38,13 @@ public class CMEjectSubcommand {
 
     private static int execExecutingPlayer(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         final ServerPlayer player = ctx.getSource().getPlayerOrException();
+        final MinecraftServer server = ctx.getSource().getServer();
 
-        player.getCapability(RoomCapabilities.ROOM_HISTORY).ifPresent(IRoomHistory::clear);
+        server.submitAsync(() -> {
+            //FIXME
+            //CompactMachines.playerHistoryApi().entryPoints().clearHistory(player);
+        });
+
         PlayerUtil.teleportPlayerToRespawnOrOverworld(ctx.getSource().getServer(), player);
 
         return 0;

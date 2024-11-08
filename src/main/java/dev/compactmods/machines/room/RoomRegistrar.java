@@ -6,17 +6,21 @@ import dev.compactmods.machines.api.room.IRoomRegistrar;
 import dev.compactmods.machines.api.room.RoomApi;
 import dev.compactmods.machines.api.room.RoomInstance;
 import dev.compactmods.machines.api.room.RoomTemplate;
+import dev.compactmods.machines.api.room.data.CMRoomDataLocations;
 import dev.compactmods.machines.api.room.registration.IRoomBuilder;
 import dev.compactmods.machines.api.util.AABBAligner;
 import dev.compactmods.machines.data.CMDataFile;
 import dev.compactmods.machines.data.CodecHolder;
 import dev.compactmods.machines.room.graph.node.RoomRegistrationNode;
 import dev.compactmods.machines.util.MathUtil;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.phys.AABB;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -107,6 +111,17 @@ public class RoomRegistrar implements IRoomRegistrar, CodecHolder<RoomRegistrar>
     private void registerDirty(RoomRegistrationNode node) {
         registrationNodes.putIfAbsent(node.code(), node);
         graph.addNode(node);
+    }
+
+    @Override
+    public Path getDataLocation(MinecraftServer server) {
+        return CMRoomDataLocations.DATA_ROOT.apply(server);
+    }
+
+    public static File getFile(MinecraftServer server) {
+        return CMRoomDataLocations.DATA_ROOT.apply(server)
+                .resolve("room_registrations.dat")
+                .toFile();
     }
 
     @Override

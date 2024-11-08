@@ -1,7 +1,7 @@
 package dev.compactmods.machines.player.capability;
 
 import dev.compactmods.machines.api.room.history.RoomEntryPoint;
-import dev.compactmods.machines.machine.Machines;
+import dev.compactmods.machines.room.Rooms;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
@@ -89,7 +89,7 @@ public class PlayerRoomDataImpl {
 
         @Override
         public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction direction) {
-            if (capability == Machines.Attachments.MACHINE_COLOR){
+            if (capability == Rooms.DataAttachments.PLAYER_ROOM_DATA){
                 if (cachedCapability == null || !cachedCapability.isPresent()){
                     cachedCapability = LazyOptional.of(supplier);
                 }
